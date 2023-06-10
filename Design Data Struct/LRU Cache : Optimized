@@ -1,0 +1,52 @@
+Leetcode - 146
+
+class LRUCache {
+public:
+    list<int> cache;    // creating a double LL
+    map<int, pair<list<int>::iterator, int>> mp;   // {key, (address, val)}
+    int n;
+
+    LRUCache(int capacity) {
+        n = capacity;
+    }
+    
+    void makeNodeRecentlyUsed(int key){     // Own Made function that used to make node come front of DLL
+        cache.erase(mp[key].first);     // delete from DLL using the address of mp stored
+        cache.push_front(key);          // push into front of DLL
+        mp[key].first = cache.begin();  // also update its new address upon changing it to first
+    }
+    int get(int key) {      // Key given, returns its corresponding value
+        if(mp.find(key)==mp.end()){     // if the required key is not present in mp also DLL
+            return -1;
+        }
+        // if present, make it recently used -> mtlb kahi bhi hoga usko first mae le aao
+        makeNodeRecentlyUsed(key);      
+        return mp[key].second;  // return its value
+    }
+    
+    void put(int key, int value) {      // putting the value in DLL
+        if(mp.find(key) != mp.end()){   // if key is found in mp
+            mp[key].second = value;     // update the existing key with new value
+            makeNodeRecentlyUsed(key);  // make it front using the function
+        }
+        else{      // if key is not present
+            cache.push_front(key);      // push in front of DLL
+            mp[key] = {cache.begin(), value};   // also update the key with its {address, value}
+            n--;    // & decrement the  given n/capacity
+        }
+
+        if(n < 0){  // if the no of n is greater than capacity
+            int keyToDelete = cache.back();     // storing address of last node bcz it is LRU & to be deleted
+            mp.erase(keyToDelete);  // also deleting it from map
+            cache.pop_back();       // also deleting from DLL
+            n++;                    // as the ode is deleted therefore n++
+        }
+    }
+};
+
+/**
+ * Your LRUCache object will be instantiated and called as such:
+ * LRUCache* obj = new LRUCache(capacity);
+ * int param_1 = obj->get(key);
+ * obj->put(key,value);
+ */
