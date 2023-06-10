@@ -1,0 +1,45 @@
+Leetcode - 1472
+
+class BrowserHistory {
+public:
+    
+    list<string> history;   // creating a DLL of type string to store URLs
+    list<string> :: iterator currentPage;   // to iterate in list<string>
+
+    BrowserHistory(string homepage) {
+        history.push_back(homepage);    // Homepage will always be there, therefore push it first
+        currentPage = history.begin();  // Also increase the ptr/iterator which is pointing now on first node
+    }
+    
+    void visit(string url) {    // function if we visit new url
+        // Now suppose before visit() function back is called and then visit() is called
+        // before heading to new url we have to clear the previous path
+        list<string> :: iterator it = currentPage;    // when back() function is called current iterator is shifted to some backwards node 
+        it++;   // it is ahead of currentPage ptr
+        history.erase(it, history.end());   // previous path is cleaned from it++ to last node which is history.end(). Because it is the node from where new url  
+        history.push_back(url);             // New URLs is pushed
+        currentPage++;                      // With every New URLs, currentPage Iterator is also moving forward and pts to last node
+    }
+    
+    string back(int steps) {    // Steps we need to come back
+        while((currentPage != history.begin()) && steps--){   // if x steps is given for backward and currentPage is already at 1st Node then it can't go more back 
+            currentPage--;
+        }
+        return *currentPage;    // returning the address
+    }
+    
+    string forward(int steps) {    // Steps we need to go forward
+        while((currentPage!=(--history.end())) && steps--){     // history.end() pts to NULL & -- pts it to last node
+            currentPage++;    // currentPage is incrementing to the forward jumps so that it can give the x steps of URLs
+        }
+        return *currentPage;    // returning the address
+    }
+};
+
+/**
+ * Your BrowserHistory object will be instantiated and called as such:
+ * BrowserHistory* obj = new BrowserHistory(homepage);
+ * obj->visit(url);
+ * string param_2 = obj->back(steps);
+ * string param_3 = obj->forward(steps);
+ */
