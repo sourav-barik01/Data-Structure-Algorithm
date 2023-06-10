@@ -1,0 +1,52 @@
+Leetcode - 146
+
+class LRUCache {
+public:
+    vector<pair<int, int>> cache;   // make a vector of pair{key, val}
+    int n;
+    
+    LRUCache(int capacity) {    // maximum capacity of LRU can be
+        n = capacity;
+    }
+    
+    int get(int key) {  // if the key is present resturn its value
+        for(int i=0; i<cache.size(); i++){  // iterate in the vector
+            if(cache[i].first == key){  // if the given key is in vector
+                int val = cache[i].second;  // store its value to be returned
+
+                /* Used value should be pushed backward bcz front val will be deleted everytime
+                   due to becoming of Least Recently Used & Last One is recently used */
+                pair<int, int> temp = cache[i];    // storing required{key, val}
+                cache.erase(cache.begin()+i);      // removing the required value from front
+                cache.push_back(temp);             // pushing it backward
+
+                return val;     // return the value
+            }
+        }
+        return -1;  // if not present return -1
+    }
+    
+    void put(int key, int value){   // Put the given {key, val} in vector
+        for(int i=0; i<cache.size(); i++){
+            if(cache[i].first == key){  // if the given new key is already present in vector
+                cache.erase(cache.begin()+i);   // erase the element bcz value/freq of key will increase
+                cache.push_back({key, value});    // push back the updated in last : becomes recently used
+                return;
+            }
+        }
+
+        if(cache.size() == n){  // if in vector it is already full capacity
+            cache.erase(cache.begin());   // then erase the first one 
+            cache.push_back({key, value});    // & push new value in last Of vector
+        }else{
+            cache.push_back({key, value});    // if the capacity is khali directly push into backward
+        }
+    }
+};
+
+/**
+ * Your LRUCache object will be instantiated and called as such:
+ * LRUCache* obj = new LRUCache(capacity);
+ * int param_1 = obj->get(key);
+ * obj->put(key,value);
+ */
