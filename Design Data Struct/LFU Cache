@@ -1,1 +1,79 @@
 Leetcode - 460
+
+class LFUCache {
+public:
+    int cap;
+    int size;
+    
+    unordered_map<int, list<vector<int>>::iterator> mp;
+    map<int, list<vector<int>>> freqDLL;
+    
+    LFUCache(int capacity) {
+        cap = capacity;
+        size = 0;
+    }
+    
+    void makeMostFrequentlyUsed(int key){
+        auto &fetchNodeAddress = (*(mp[key]));
+        int value = fetchNodeAddress[1];
+        int freq  = fetchNodeAddress[2];
+        
+        freqDLL[freq].erase(mp[key]);   // deleting only the freq value of node rather than whole node using address stored in mp
+        if(freqDLL[freq].empty()){
+            freqDLL.erase(freq);
+        }
+        
+        freq++;
+        freqDLL[freq].push_front(vector<int>({key, value, freq}));  // freqDLL[freq] -> value of counter in freqDLL
+        mp[key] = freqDLL[freq].begin();
+    }
+    
+    int get(int key) {
+        if(mp.find(key) == mp.end()){
+            return -1;
+        }
+        
+        auto &fetchNodeAddress = (*(mp[key]));
+        int value = fetchNodeAddress[1];
+        makeMostFrequentlyUsed(key);
+        return value;
+    }
+    
+    void put(int key, int value) {
+        if(cap == 0){
+            return;
+        }
+        if(mp.find(key) != mp.end()){
+            auto &fetchNodeAddress = (*(mp[key]));
+            fetchNodeAddress[1] = value;
+            makeMostFrequentlyUsed(key);
+        }
+        else if(size < cap){
+            size++;
+            freqDLL[1].push_front(vector<int>({key, value, 1}));
+            mp[key] = freqDLL[1].begin();
+        }
+        else{
+            // Delete the node from DLL
+            auto &kaun_saList = freqDLL.begin() -> second;
+            int key_toDelete  = (kaun_saList.back())[0];    // Node milne k baad uska key ko store kr liye isliye [0]
+            kaun_saList.pop_back();
+            
+            if(kaun_saList.empty()){
+                freqDLL.erase(freqDLL.begin() -> first);    //mp.erase(key)
+            }
+            
+            // Add the Node in DLL as well as in map
+            freqDLL[1].push_front(vector<int>({key, value, 1}));
+            mp.erase(key_toDelete);
+            mp[key] = freqDLL[1].begin();
+        }
+    }
+};
+
+/**
+ * Your LFUCache object will be instantiated and called as such:
+ * LFUCache* obj = new LFUCache(capacity);
+ * int param_1 = obj->get(key);
+ * obj->put(key,value);
+ */
