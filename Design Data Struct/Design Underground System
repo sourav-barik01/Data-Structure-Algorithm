@@ -1,0 +1,48 @@
+Leetcode - 1396
+
+class UndergroundSystem {
+public:
+    unordered_map<int, pair<string, int>> checkIn_mp;   // id -> {stationName, time}
+    unordered_map<string, pair<int, int>> checkOut_mp;  // route -> {totalTime, cnt}
+
+    UndergroundSystem() {
+        
+    }
+    
+    void checkIn(int id, string stationName, int entryTime) {
+        checkIn_mp[id] = {stationName, entryTime};
+    }
+    
+    void checkOut(int id, string stationName, int exitTime) {
+        string startStation = checkIn_mp[id].first;
+        int entryT = checkIn_mp[id].second;
+
+        string endStation = stationName;
+        int exitT = exitTime;
+
+        string route = startStation + "->" + endStation;
+        int totalTime = exitTime - entryT;
+
+        checkOut_mp[route].first += totalTime;
+        checkOut_mp[route].second += 1;
+
+        checkIn_mp.erase(id);
+    }
+    
+    double getAverageTime(string startStation, string endStation) {
+        string route = startStation + "->" + endStation;
+
+        auto &it = checkOut_mp[route];
+        int totalTime = it.first;
+        int cnt = it.second;
+        return (double)totalTime/cnt;
+    }
+};
+
+/**
+ * Your UndergroundSystem object will be instantiated and called as such:
+ * UndergroundSystem* obj = new UndergroundSystem();
+ * obj->checkIn(id,stationName,t);
+ * obj->checkOut(id,stationName,t);
+ * double param_3 = obj->getAverageTime(startStation,endStation);
+ */
