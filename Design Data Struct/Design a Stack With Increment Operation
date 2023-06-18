@@ -1,0 +1,53 @@
+Leetcode - 1381
+
+class CustomStack {
+public:
+    stack<int> st;
+    int size;
+    CustomStack(int maxSize) {
+        size = maxSize;
+    }
+    
+    void push(int x) {
+        if(st.size() == size){
+            return;
+        }
+        st.push(x);
+    }
+    
+    int pop() {
+        if(st.empty()){
+            return -1;
+        }
+        int topElem = st.top();
+        st.pop();
+        return topElem;
+    }
+    
+    void increment(int k, int val) {
+        stack<int> temp;
+        // Put all the element in temp
+        while(!st.empty()){
+            temp.push(st.top());
+            st.pop();
+        }
+        // From Temp take out the top element + val & again put it into again st
+        for(int i=0; i<k && !temp.empty(); i++){
+            st.push(temp.top() + val);
+            temp.pop();
+        }
+        // Remaining Element in temp
+        while(!temp.empty()){
+            st.push(temp.top());
+            temp.pop();
+        }
+    }
+};
+
+/**
+ * Your CustomStack object will be instantiated and called as such:
+ * CustomStack* obj = new CustomStack(maxSize);
+ * obj->push(x);
+ * int param_2 = obj->pop();
+ * obj->increment(k,val);
+ */
